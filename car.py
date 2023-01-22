@@ -58,6 +58,10 @@ with prediction:
     
     # Convert Rupee to USD
     car['Price'] =  (car['Price']*0.012).astype(int)
+    
+    # Copy the original car dataframe to use for Linear Regression model
+    car_copy = car.copy()
+    
     st.subheader("Data Table")
     st.write(car)
     
@@ -97,17 +101,11 @@ with prediction:
             year = int(year)
         except ValueError:
             st.warning("Please enter a valid year number")
-            
-    # Adding column to the dataframe with controlled random variable to make the prediction
-    if car.shape[0] < 2:
-        random_price = random.randint(car.loc[0][3],car.loc[0][3] + 10000)
-        random_kms_driven = random.randint(car.loc[0][3] - 5000 , car.loc[0][3])
-        car.loc[len(car.index)] = [car.loc[0][0], car.loc[0][1], car.loc[0][2], random_price, random_kms_driven , car.loc[0][5]]
     
     if year and distance:
         # Extracting Training Data
-        X=car[['name','company','year','kms_driven','fuel_type']]
-        y=car['Price']
+        X=car_copy[['name','company','year','kms_driven','fuel_type']]
+        y=car_copy['Price']
         
         # Creating an OneHotEncoder object to contain all the possible categories
         ohe=OneHotEncoder()
